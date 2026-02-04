@@ -14,9 +14,14 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "salary", nullable = false)
     private BigDecimal salary;
+    @Column(name = "hiring_date", nullable = false)
     private LocalDate hiringDate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 
     public Employee() {
