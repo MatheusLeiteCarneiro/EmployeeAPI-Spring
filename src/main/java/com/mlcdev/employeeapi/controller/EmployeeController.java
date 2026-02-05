@@ -24,6 +24,13 @@ public class EmployeeController {
         this.service = service;
     }
 
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<EmployeeDTO> findById(@PathVariable Long id){
+        log.debug("Request received to find employee with ID: {}", id);
+        EmployeeDTO savedDto = service.findById(id);
+        return ResponseEntity.ok(savedDto);
+    }
+
     @GetMapping
     public ResponseEntity<Page<EmployeeDTO>> findAll(@PageableDefault(page = 0, size = 10) Pageable pageable){
         log.debug("Request received to find all, with a size of {}, on page {}",pageable.getPageSize(),pageable.getPageNumber());
@@ -33,9 +40,9 @@ public class EmployeeController {
 
     @PostMapping
     public ResponseEntity<EmployeeDTO> create(@Valid @RequestBody EmployeeDTO dto) {
+        log.debug("Request received create employee");
         EmployeeDTO savedDto = service.add(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedDto.getId()).toUri();
-        log.debug("Returning the response containing the crated employee DTO");
         return ResponseEntity.created(uri).body(savedDto);
     }
 }
