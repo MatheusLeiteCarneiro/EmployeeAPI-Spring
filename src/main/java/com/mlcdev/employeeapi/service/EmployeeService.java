@@ -22,6 +22,14 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
+    public EmployeeDTO findById(Long id){
+        log.debug("Starting operation to find an employee with ID; {}",id);
+        EmployeeDTO dto = repository.findById(id).map(EmployeeMapper::toDTO).orElseThrow(() -> new NotFoundException("Employee with ID: " + id + " not found"));
+        log.info("Employee {} found with ID: {}",dto.getName(),dto.getId());
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
     public Page<EmployeeDTO> findAll(Pageable pageable){
         Page<Employee> result = repository.findAll(pageable);
         log.info("Page found with {} elements out of a total of: {}",result.getNumberOfElements(),result.getTotalElements());
