@@ -45,4 +45,12 @@ public class EmployeeController {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedDto.getId()).toUri();
         return ResponseEntity.created(uri).body(savedDto);
     }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<EmployeeDTO> update(@PathVariable Long id,@Valid @RequestBody EmployeeDTO dto){
+        log.debug("Request received to update the employee with ID: {}",id);
+        dto.setId(id);
+        EmployeeDTO updatedDTO = service.update(dto);
+        return ResponseEntity.ok(updatedDTO);
+    }
 }
