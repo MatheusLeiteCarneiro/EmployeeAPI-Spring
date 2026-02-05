@@ -51,4 +51,13 @@ public class EmployeeService {
         log.info("Employee with ID: {}, updated",updatedEntity.getId());
         return EmployeeMapper.toDTO(updatedEntity);
     }
+
+    @Transactional
+    public void delete(Long id){
+        if(!repository.existsById(id)){
+            throw new NotFoundException("The employee with id "+ id +" does not exist");
+        }
+        repository.deleteById(id);
+        log.info("Employee with Id {} deleted",id);
+    }
 }
