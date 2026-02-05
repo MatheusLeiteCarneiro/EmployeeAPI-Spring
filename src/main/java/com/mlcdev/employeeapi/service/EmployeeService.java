@@ -44,4 +44,11 @@ public class EmployeeService {
         log.info("Employee {} saved with ID: {}",savedDto.getName(),savedDto.getId());
        return savedDto;
     }
+
+    @Transactional
+    public EmployeeDTO update(EmployeeDTO dto){
+        Employee updatedEntity = repository.save(EmployeeMapper.toEntity(dto));
+        log.info("Employee with ID: {}, updated",updatedEntity.getId());
+        return EmployeeMapper.toDTO(updatedEntity);
+    }
 }
