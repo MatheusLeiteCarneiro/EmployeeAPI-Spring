@@ -38,7 +38,6 @@ public class EmployeeService {
 
     @Transactional
     public EmployeeDTO add(EmployeeDTO dto){
-        log.debug("Request to create new employee {}",dto.getName());
         Employee entity =EmployeeMapper.toEntity(dto);
         entity = repository.save(entity);
         EmployeeDTO savedDto = EmployeeMapper.toDTO(entity);
