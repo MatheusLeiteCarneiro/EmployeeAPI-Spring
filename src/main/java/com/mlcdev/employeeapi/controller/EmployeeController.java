@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -53,4 +54,13 @@ public class EmployeeController {
         EmployeeDTO updatedDTO = service.update(dto);
         return ResponseEntity.ok(updatedDTO);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        log.debug("Request received to delete the employee with ID: {}",id);
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }
