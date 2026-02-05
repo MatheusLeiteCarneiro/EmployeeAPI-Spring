@@ -47,6 +47,7 @@ public class EmployeeService {
 
     @Transactional
     public EmployeeDTO update(EmployeeDTO dto){
+        verifyIfEmployeeExists(dto.getId());
         Employee updatedEntity = repository.save(EmployeeMapper.toEntity(dto));
         log.info("Employee with ID: {}, updated",updatedEntity.getId());
         return EmployeeMapper.toDTO(updatedEntity);
@@ -54,10 +55,14 @@ public class EmployeeService {
 
     @Transactional
     public void delete(Long id){
+        verifyIfEmployeeExists(id);
+        repository.deleteById(id);
+        log.info("Employee with Id {} deleted",id);
+    }
+
+    private void verifyIfEmployeeExists(Long id){
         if(!repository.existsById(id)){
             throw new NotFoundException("The employee with id "+ id +" does not exist");
         }
-        repository.deleteById(id);
-        log.info("Employee with Id {} deleted",id);
     }
 }
