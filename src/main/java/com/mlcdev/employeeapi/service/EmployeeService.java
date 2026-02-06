@@ -47,8 +47,8 @@ public class EmployeeService {
 
     @Transactional
     public EmployeeDTO update(EmployeeDTO dto){
-        verifyIfEmployeeExists(dto.getId());
-        Employee updatedEntity = repository.save(EmployeeMapper.toEntity(dto));
+        Employee entity = repository.findById(dto.getId()).orElseThrow(() -> new NotFoundException("The employee with id "+ dto.getId() +" does not exist"));
+        Employee updatedEntity = repository.save(EmployeeMapper.updateEntity(dto, entity));
         log.info("Employee with ID: {}, updated",updatedEntity.getId());
         return EmployeeMapper.toDTO(updatedEntity);
     }
