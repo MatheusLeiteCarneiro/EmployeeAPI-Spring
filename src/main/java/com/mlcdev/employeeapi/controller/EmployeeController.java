@@ -16,7 +16,7 @@ import java.net.URI;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/employee")
+@RequestMapping(value = "/app/employee")
 public class EmployeeController {
 
     private final EmployeeService service;
