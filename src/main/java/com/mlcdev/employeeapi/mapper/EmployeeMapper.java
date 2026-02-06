@@ -33,6 +33,15 @@ public class EmployeeMapper {
                 .build();
     }
 
+    public static Employee updateEntity(EmployeeDTO dto, Employee entity){
+        Employee updatedEntity = entity;
+        updatedEntity.setName(dto.getName());
+        updatedEntity.setSalary(dto.getSalary());
+        updatedEntity.setHiringDate(dto.getHiringDate());
+        updatedEntity.setRole(dto.getRole());
+        return updatedEntity;
+    }
+
     public static void updateEntityFromDTO(EmployeeDTO dto, Employee entity){
         if(dto == null || entity == null){
             return;
