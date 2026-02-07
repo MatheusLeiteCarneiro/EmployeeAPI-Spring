@@ -38,7 +38,5 @@ env.properties
 *.crt
 
 
-*.sql
-*.sqlite
 *.db
 dump.rdb
