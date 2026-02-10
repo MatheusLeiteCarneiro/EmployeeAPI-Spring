@@ -51,13 +51,13 @@ public class EmployeeIntegrationTest {
         return EmployeeMapper.toDTO(updatedEntity);
     }
 
-    private void assertEmployeeBody(ResultActions resultActions, EmployeeDTO dto) throws Exception {
+    private void assertEmployeeBody(ResultActions resultActions, String prefix ,EmployeeDTO dto) throws Exception {
         resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(dto.getId()))
-                .andExpect(jsonPath("$.name").value(dto.getName()))
-                .andExpect(jsonPath("$.hiringDate").value(dto.getHiringDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
-                .andExpect(jsonPath("$.role").value(dto.getRole().name()))
-                .andExpect(jsonPath("$.salary").value(dto.getSalary().doubleValue()));
+                .andExpect(jsonPath(prefix +".id").value(dto.getId()))
+                .andExpect(jsonPath(prefix + ".name").value(dto.getName()))
+                .andExpect(jsonPath(prefix + ".hiringDate").value(dto.getHiringDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
+                .andExpect(jsonPath(prefix + ".role").value(dto.getRole().name()))
+                .andExpect(jsonPath(prefix + ".salary").value(dto.getSalary().doubleValue()));
     }
 
     @BeforeEach
@@ -76,6 +76,6 @@ public class EmployeeIntegrationTest {
     void shouldGetEmployeeByID() throws Exception {
         EmployeeDTO dto = addBaseEmployeeToDataBase();
         ResultActions resultActions = mockMvc.perform(get("/app/employee/{id}", dto.getId()).contentType(MediaType.APPLICATION_JSON));
-        assertEmployeeBody(resultActions, dto);
+        assertEmployeeBody(resultActions, "$" ,dto);
     }
 }
