@@ -43,5 +43,13 @@ public class EmployeeIntegrationTest {
     void setup() {
         jdbcTemplate.execute("TRUNCATE TABLE tb_employee RESTART IDENTITY");
     }
-    
+
+    @Test
+    void shouldCreateEmployee() throws Exception{
+        EmployeeDTO inputDto = getBaseDTOBuilder().build();
+        mockMvc.perform(post("/app/employee").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(inputDto))).andExpect(status().isCreated());
+        Assertions.assertEquals(1, repository.count());
+    }
+
+
 }
