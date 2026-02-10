@@ -1,6 +1,8 @@
 package com.mlcdev.employeeapi;
 
 import com.mlcdev.employeeapi.dto.EmployeeDTO;
+import com.mlcdev.employeeapi.mapper.EmployeeMapper;
+import com.mlcdev.employeeapi.model.Employee;
 import com.mlcdev.employeeapi.model.Role;
 import com.mlcdev.employeeapi.repository.EmployeeRepository;
 import org.junit.jupiter.api.Assertions;
@@ -37,6 +39,12 @@ public class EmployeeIntegrationTest {
 
     private EmployeeDTO.EmployeeDTOBuilder getBaseDTOBuilder(){
         return EmployeeDTO.builder().name("Name").salary(new BigDecimal("1.00")).role(Role.INTERN).hiringDate(LocalDate.of(2000, 1, 1));
+    }
+
+    private EmployeeDTO addBaseEmployeeToDataBase(){
+        Employee entity = EmployeeMapper.toEntity(getBaseDTOBuilder().build());
+        Employee updatedEntity = repository.save(entity);
+        return EmployeeMapper.toDTO(updatedEntity);
     }
 
     @BeforeEach
