@@ -23,8 +23,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,8 +52,7 @@ public class EmployeeIntegrationTest {
     }
 
     private void assertEmployeeBody(ResultActions resultActions, String prefix ,EmployeeDTO dto) throws Exception {
-        resultActions.andExpect(status().isOk())
-                .andExpect(jsonPath(prefix +".id").value(dto.getId()))
+                resultActions.andExpect(jsonPath(prefix +".id").value(dto.getId()))
                 .andExpect(jsonPath(prefix + ".name").value(dto.getName()))
                 .andExpect(jsonPath(prefix + ".hiringDate").value(dto.getHiringDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
                 .andExpect(jsonPath(prefix + ".role").value(dto.getRole().name()))
@@ -69,7 +67,9 @@ public class EmployeeIntegrationTest {
     @Test
     void shouldCreateEmployee() throws Exception{
         EmployeeDTO inputDto = getBaseDTOBuilder().build();
-        mockMvc.perform(post("/app/employee").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(inputDto))).andExpect(status().isCreated());
+        ResultActions resultActions = mockMvc.perform(post("/app/employee").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(inputDto))).andExpect(status().isCreated());
+        inputDto.setId(1L);
+        assertEmployeeBody(resultActions, "$", inputDto);
         Assertions.assertEquals(1, repository.count());
     }
 
@@ -89,5 +89,25 @@ public class EmployeeIntegrationTest {
         resultActions.andExpect(status().isOk()).andExpect(jsonPath("$.content", hasSize(2)));
         assertEmployeeBody(resultActions, "$.content[0]", dto0);
         assertEmployeeBody(resultActions, "$.content[1]", dto1);
+    }
+
+    @Test
+    void shouldUpdateEmployee() throws Exception {
+        EmployeeDTO dto = addBaseEmployeeToDataBase();
+        dto.setName("Name2");
+        dto.setRole(Role.JUNIOR);
+        dto.setSalary(new BigDecimal("1.00"));
+        dto.setHiringDate(LocalDate.of(2001, 2, 2));
+        ResultActions resultActions = mockMvc.perform(put("/app/employee/{id}", dto.getId())
+                .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(dto)));
+        resultActions.andExpect(status().isOk());
+        assertEmployeeBody(resultActions, "$", dto);
+    }
+
+    @Test
+    void shouldDeleteEmployee() throws Exception {
+        EmployeeDTO dto = addBaseEmployeeToDataBase();
+        mockMvc.perform(delete("/app/employee/{id}", dto.getId()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+        Assertions.assertEquals(0, repository.count());
     }
 }
