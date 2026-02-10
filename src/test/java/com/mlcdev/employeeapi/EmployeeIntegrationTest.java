@@ -13,14 +13,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.MediaType;
 import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -47,6 +51,15 @@ public class EmployeeIntegrationTest {
         return EmployeeMapper.toDTO(updatedEntity);
     }
 
+    private void assertEmployeeBody(ResultActions resultActions, EmployeeDTO dto) throws Exception {
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(dto.getId()))
+                .andExpect(jsonPath("$.name").value(dto.getName()))
+                .andExpect(jsonPath("$.hiringDate").value(dto.getHiringDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
+                .andExpect(jsonPath("$.role").value(dto.getRole().name()))
+                .andExpect(jsonPath("$.salary").value(dto.getSalary().doubleValue()));
+    }
+
     @BeforeEach
     void setup() {
         jdbcTemplate.execute("TRUNCATE TABLE tb_employee RESTART IDENTITY");
@@ -59,5 +72,10 @@ public class EmployeeIntegrationTest {
         Assertions.assertEquals(1, repository.count());
     }
 
-
+    @Test
+    void shouldGetEmployeeByID() throws Exception {
+        EmployeeDTO dto = addBaseEmployeeToDataBase();
+        ResultActions resultActions = mockMvc.perform(get("/app/employee/{id}", dto.getId()).contentType(MediaType.APPLICATION_JSON));
+        assertEmployeeBody(resultActions, dto);
+    }
 }
