@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -77,5 +78,16 @@ public class EmployeeIntegrationTest {
         EmployeeDTO dto = addBaseEmployeeToDataBase();
         ResultActions resultActions = mockMvc.perform(get("/app/employee/{id}", dto.getId()).contentType(MediaType.APPLICATION_JSON));
         assertEmployeeBody(resultActions, "$" ,dto);
+    }
+
+    @Test
+    void shouldGetAListOfEmployee() throws Exception{
+        EmployeeDTO dto0 = addBaseEmployeeToDataBase();
+        EmployeeDTO dto1 = addBaseEmployeeToDataBase();
+
+        ResultActions resultActions = mockMvc.perform(get("/app/employee").contentType(MediaType.APPLICATION_JSON));
+        resultActions.andExpect(status().isOk()).andExpect(jsonPath("$.content", hasSize(2)));
+        assertEmployeeBody(resultActions, "$.content[0]", dto0);
+        assertEmployeeBody(resultActions, "$.content[1]", dto1);
     }
 }
