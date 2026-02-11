@@ -4,6 +4,7 @@ import com.mlcdev.employeeapi.dto.EmployeeDTO;
 import com.mlcdev.employeeapi.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -33,7 +34,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<EmployeeDTO>> findAll(@PageableDefault(page = 0, size = 10) Pageable pageable){
+    public ResponseEntity<Page<EmployeeDTO>> findAll(@ParameterObject @PageableDefault(page = 0, size = 10) Pageable pageable){
         log.debug("Request received to find all, with a size of {}, on page {}",pageable.getPageSize(),pageable.getPageNumber());
         Page<EmployeeDTO> page = service.findAll(pageable);
         return ResponseEntity.ok(page);
